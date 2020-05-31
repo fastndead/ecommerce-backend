@@ -4,18 +4,15 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors')
 
-// var indexRouter = require('./routes/index');
 var itemsRouter = require('./routes/items');
+var orderRouter = require('./routes/order');
 
 
 // Mongoose setup
 
-var session = require('express-session');
-var connectMongo = require('connect-mongo');
 var mongoose = require('mongoose');
-const MongoStore = connectMongo(session);
-const dbUri = process.env.MONGODB_URI || 'mongodb+srv://admin:TCjOOMyHbpFrOOul@ecommercecluster-lxbpx.mongodb.net/ecommerce?retryWrites=true&w=majority';
-const secret = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor';
+const dbUri = 'mongodb+srv://admin:DbzAxZf1fejHLwpa@ecommercecluster-lxbpx.mongodb.net/ecommerce?retryWrites=true&w=majority';
+
 
 mongoose.connect(dbUri, {
   useNewUrlParser: true,
@@ -26,7 +23,6 @@ mongoose.connect(dbUri, {
   console.log(`Error while connecting DB: ${err}!`);
 });
 
-var db = mongoose.connection;
 
 // App setup
 
@@ -38,21 +34,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(session({
-  secret: secret,
-  resave: false,
-  saveUninitialized: true,
-  store: new MongoStore({
-    mongooseConnection: db,
-    secret: secret
-  }),
-  cookie: {
-    maxAge: 10 * 60 * 1000
-  },
-}));
 
 // app.use('/', indexRouter);
 app.use('/items', itemsRouter);
+app.use('/orders', orderRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
