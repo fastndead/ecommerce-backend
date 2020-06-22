@@ -7,14 +7,27 @@ orders = []
 
 router.post('/', function(req, res, next) {
   if (req.body) {
-    
+    try{      
       const newOrder = new OrderModel(req.body)
       newOrder.save(err => {
-        if (err) return console.error(err);
-        res.send(createError(500))
+        if (err) {
+          console.error(err)
+          return res.send(createError(500))
+        };
+        
+        return  res.send()
       });
+    }catch (e) {
+      console.log(e);
+      return res.send(createError(500))
+    }
   }
-  res.send()
+ 
+});
+
+router.get('/', async (req, res, next) => {
+  const items = await OrderModel.find({}).lean().exec();
+  res.send(items);
 });
 
 module.exports = router;
